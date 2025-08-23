@@ -8,9 +8,14 @@ class Booking {
   static async create(bookingData) {
     const booking = {
       id: uuidv4(),
-      ...bookingData,
+      classId: bookingData.classId,
+      date: bookingData.date,
+      time: bookingData.time,
+      price: bookingData.price,
+      user: bookingData.user,
       status: bookingData.status || 'pending',
       paymentStatus: bookingData.paymentStatus || 'pending',
+      notes: bookingData.notes || '',
       createdAt: new Date().toISOString()
     };
 
@@ -42,12 +47,11 @@ class Booking {
     return result.Items;
   }
 
-  static async findByEvent(eventId) {
+  static async findByClass(classId) {
     const result = await dynamodb.send(new ScanCommand({
       TableName: TABLE_NAME,
-      FilterExpression: '#event = :event',
-      ExpressionAttributeNames: { '#event': 'event' },
-      ExpressionAttributeValues: { ':event': eventId }
+      FilterExpression: 'classId = :classId',
+      ExpressionAttributeValues: { ':classId': classId }
     }));
 
     return result.Items;

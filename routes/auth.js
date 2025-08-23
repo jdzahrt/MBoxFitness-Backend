@@ -71,4 +71,31 @@ router.get('/me', auth, async (req, res) => {
   res.json(req.user);
 });
 
+// Test login for development
+router.post('/test-login', async (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({ message: 'Test login not available in production' });
+  }
+
+  try {
+    const { userId = 1 } = req.body;
+    
+    const testUsers = [
+      { id: 'test-user-1', email: 'test1@example.com', name: 'Test User 1', role: 'user' },
+      { id: 'test-user-2', email: 'test2@example.com', name: 'Test User 2', role: 'trainer' },
+      { id: 'test-user-3', email: 'admin@example.com', name: 'Admin User', role: 'admin' }
+    ];
+    
+    const testUser = testUsers[userId - 1] || testUsers[0];
+    const token = jwt.sign({ userId: testUser.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    
+    res.json({
+      token,
+      user: testUser
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;

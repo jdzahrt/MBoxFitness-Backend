@@ -5,19 +5,17 @@ const auth = require('../middleware/auth');
 
 const router = express.Router();
 
-// Send message
+// Send message/notification
 router.post('/', auth, async (req, res) => {
   try {
-    const { recipient, content } = req.body;
-    
-    // Create room ID (consistent ordering)
-    const roomId = [req.user.id, recipient].sort().join('_');
+    const { recipient, content, type, title } = req.body;
     
     const message = await Message.create({
       sender: req.user.id,
       recipient,
       content,
-      roomId
+      type: type || 'message',
+      title: title || 'New Message'
     });
     
     res.status(201).json(message);
@@ -26,23 +24,17 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// Get conversation
-router.get('/conversation/:userId', auth, async (req, res) => {
+// Get user messages (inbox)
+router.get('/my-messages', auth, async (req, res) => {
   try {
-    const roomId = [req.user.id, req.params.userId].sort().join('_');
-    const messages = await Message.findByRoom(roomId);
+    const messages = await Message.findByUser(req.user.id);
     
-    // Populate user info
+    // Populate sender info
     for (let message of messages) {
       const sender = await User.findById(message.sender);
-      const recipient = await User.findById(message.recipient);
       if (sender) {
         delete sender.password;
         message.senderInfo = sender;
-      }
-      if (recipient) {
-        delete recipient.password;
-        message.recipientInfo = recipient;
       }
     }
     
@@ -52,21 +44,58 @@ router.get('/conversation/:userId', auth, async (req, res) => {
   }
 });
 
-// Get user conversations
-router.get('/conversations', auth, async (req, res) => {
+// Get specific message
+router.get('/:id', auth, async (req, res) => {
   try {
-    const conversations = await Message.findConversations(req.user.id);
-    res.json(conversations);
+    const message = await Message.findById(req.params.id);
+    
+    if (!message) {
+      return res.status(404).json({ message: 'Message not found' });
+    }
+    
+    // Check if user is recipient
+    if (message.recipient !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+    
+    // Populate sender info
+    const sender = await User.findById(message.sender);
+    if (sender) {
+      delete sender.password;
+      message.senderInfo = sender;
+    }
+    
+    res.json(message);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Mark messages as read
-router.put('/read/:roomId', auth, async (req, res) => {
+// Mark message as read
+router.put('/:id/read', auth, async (req, res) => {
   try {
-    await Message.markAsRead(req.params.roomId);
-    res.json({ message: 'Messages marked as read' });
+    const message = await Message.findById(req.params.id);
+    
+    if (!message) {
+      return res.status(404).json({ message: 'Message not found' });
+    }
+    
+    if (message.recipient !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized' });
+    }
+    
+    await Message.markAsRead(req.params.id);
+    res.json({ message: 'Message marked as read' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get unread message count
+router.get('/unread/count', auth, async (req, res) => {
+  try {
+    const count = await Message.getUnreadCount(req.user.id);
+    res.json({ count });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

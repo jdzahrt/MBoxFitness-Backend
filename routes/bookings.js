@@ -9,19 +9,17 @@ const router = express.Router();
 // Create booking
 router.post('/', auth, async (req, res) => {
   try {
-    const { event, notes } = req.body;
-    
-    const eventData = await Event.findById(event);
-    if (!eventData) {
-      return res.status(404).json({ message: 'Event not found' });
-    }
+    const { classId, date, time, price, notes } = req.body;
 
     const booking = await Booking.create({
+      classId,
+      date,
+      time,
+      price,
       user: req.user.id,
-      event,
       notes
     });
-    
+
     res.status(201).json(booking);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -32,26 +30,17 @@ router.post('/', auth, async (req, res) => {
 router.get('/my-bookings', auth, async (req, res) => {
   try {
     const bookings = await Booking.findByUser(req.user.id);
-    
-    // Populate event info
-    for (let booking of bookings) {
-      const event = await Event.findById(booking.event);
-      if (event) {
-        booking.eventInfo = event;
-      }
-    }
-    
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Get event bookings
-router.get('/event/:eventId', async (req, res) => {
+// Get class bookings
+router.get('/class/:classId', async (req, res) => {
   try {
-    const bookings = await Booking.findByEvent(req.params.eventId);
-    
+    const bookings = await Booking.findByClass(parseInt(req.params.classId));
+
     // Populate user info
     for (let booking of bookings) {
       const user = await User.findById(booking.user);
@@ -60,7 +49,7 @@ router.get('/event/:eventId', async (req, res) => {
         booking.userInfo = user;
       }
     }
-    
+
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });

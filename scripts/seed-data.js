@@ -178,34 +178,47 @@ const seedData = async () => {
     }
   ];
 
-  // Create test messages
+  // Create test messages/notifications
   const messages = [
     {
       id: 'message-1',
-      sender: 'user-1',
-      recipient: 'trainer-2',
-      content: 'Hi, I have a question about the boxing bootcamp',
-      roomId: 'trainer-2_user-1',
+      sender: 'trainer-2',
+      recipient: 'user-1',
+      title: 'Booking Confirmed',
+      content: 'Your booking for Boxing Bootcamp Challenge has been confirmed!',
+      type: 'booking_confirmation',
       read: false,
       createdAt: new Date().toISOString()
     },
     {
       id: 'message-2',
-      sender: 'trainer-2',
+      sender: 'trainer-1',
       recipient: 'user-1',
-      content: 'Sure! What would you like to know?',
-      roomId: 'trainer-2_user-1',
+      title: 'Workshop Reminder',
+      content: 'Don\'t forget about the Nutrition Workshop tomorrow at 6:00 PM. Please bring a notebook!',
+      type: 'reminder',
       read: false,
       createdAt: new Date().toISOString()
     },
     {
       id: 'message-3',
-      sender: 'user-1',
-      recipient: 'trainer-1',
-      content: 'What should I bring to the nutrition workshop?',
-      roomId: 'trainer-1_user-1',
+      sender: 'trainer-2',
+      recipient: 'user-1',
+      title: 'Event Update',
+      content: 'The Boxing Bootcamp Challenge location has been updated to Main Gym Floor.',
+      type: 'event_update',
+      read: true,
+      createdAt: new Date(Date.now() - 86400000).toISOString() // 1 day ago
+    },
+    {
+      id: 'message-4',
+      sender: 'trainer-1',
+      recipient: 'user-1',
+      title: 'Welcome Message',
+      content: 'Welcome to MBoxFitness! We\'re excited to have you join our community.',
+      type: 'welcome',
       read: false,
-      createdAt: new Date().toISOString()
+      createdAt: new Date(Date.now() - 172800000).toISOString() // 2 days ago
     }
   ];
 
