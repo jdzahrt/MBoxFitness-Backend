@@ -6,7 +6,7 @@ const auth = require('../middleware/auth');
 const router = express.Router();
 
 // Get all events
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const events = await Event.findAll();
     

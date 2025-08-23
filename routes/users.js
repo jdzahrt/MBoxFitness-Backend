@@ -5,12 +5,13 @@ const auth = require('../middleware/auth');
 const router = express.Router();
 
 // Get user profile
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('-password');
+    const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+    delete user.password;
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -21,12 +22,8 @@ router.get('/:id', auth, async (req, res) => {
 router.put('/profile', auth, async (req, res) => {
   try {
     const { name, profile } = req.body;
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { name, profile },
-      { new: true }
-    ).select('-password');
-    
+    const user = await User.update(req.user.id, { name, profile });
+    delete user.password;
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -34,9 +31,10 @@ router.put('/profile', auth, async (req, res) => {
 });
 
 // Get trainers
-router.get('/trainers/list', auth, async (req, res) => {
+router.get('/trainers/list', async (req, res) => {
   try {
-    const trainers = await User.find({ role: 'trainer' }).select('-password');
+    const trainers = await User.findTrainers();
+    trainers.forEach(trainer => delete trainer.password);
     res.json(trainers);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });

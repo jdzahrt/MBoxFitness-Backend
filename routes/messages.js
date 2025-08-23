@@ -1,5 +1,6 @@
 const express = require('express');
 const Message = require('../models/Message');
+const User = require('../models/User');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
@@ -7,20 +8,17 @@ const router = express.Router();
 // Send message
 router.post('/', auth, async (req, res) => {
   try {
-    const { recipientId, content } = req.body;
+    const { recipient, content } = req.body;
     
     // Create room ID (consistent ordering)
-    const roomId = [req.user._id, recipientId].sort().join('_');
+    const roomId = [req.user.id, recipient].sort().join('_');
     
-    const message = new Message({
-      sender: req.user._id,
-      recipient: recipientId,
+    const message = await Message.create({
+      sender: req.user.id,
+      recipient,
       content,
       roomId
     });
-
-    await message.save();
-    await message.populate(['sender', 'recipient'], 'name');
     
     res.status(201).json(message);
   } catch (error) {
@@ -31,11 +29,22 @@ router.post('/', auth, async (req, res) => {
 // Get conversation
 router.get('/conversation/:userId', auth, async (req, res) => {
   try {
-    const roomId = [req.user._id, req.params.userId].sort().join('_');
+    const roomId = [req.user.id, req.params.userId].sort().join('_');
+    const messages = await Message.findByRoom(roomId);
     
-    const messages = await Message.find({ roomId })
-      .populate(['sender', 'recipient'], 'name')
-      .sort({ createdAt: 1 });
+    // Populate user info
+    for (let message of messages) {
+      const sender = await User.findById(message.sender);
+      const recipient = await User.findById(message.recipient);
+      if (sender) {
+        delete sender.password;
+        message.senderInfo = sender;
+      }
+      if (recipient) {
+        delete recipient.password;
+        message.recipientInfo = recipient;
+      }
+    }
     
     res.json(messages);
   } catch (error) {
@@ -46,45 +55,7 @@ router.get('/conversation/:userId', auth, async (req, res) => {
 // Get user conversations
 router.get('/conversations', auth, async (req, res) => {
   try {
-    const conversations = await Message.aggregate([
-      {
-        $match: {
-          $or: [
-            { sender: req.user._id },
-            { recipient: req.user._id }
-          ]
-        }
-      },
-      {
-        $sort: { createdAt: -1 }
-      },
-      {
-        $group: {
-          _id: '$roomId',
-          lastMessage: { $first: '$$ROOT' },
-          unreadCount: {
-            $sum: {
-              $cond: [
-                {
-                  $and: [
-                    { $eq: ['$recipient', req.user._id] },
-                    { $eq: ['$read', false] }
-                  ]
-                },
-                1,
-                0
-              ]
-            }
-          }
-        }
-      }
-    ]);
-
-    await Message.populate(conversations, {
-      path: 'lastMessage.sender lastMessage.recipient',
-      select: 'name'
-    });
-
+    const conversations = await Message.findConversations(req.user.id);
     res.json(conversations);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -94,15 +65,7 @@ router.get('/conversations', auth, async (req, res) => {
 // Mark messages as read
 router.put('/read/:roomId', auth, async (req, res) => {
   try {
-    await Message.updateMany(
-      {
-        roomId: req.params.roomId,
-        recipient: req.user._id,
-        read: false
-      },
-      { read: true }
-    );
-    
+    await Message.markAsRead(req.params.roomId);
     res.json({ message: 'Messages marked as read' });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });

@@ -10,9 +10,7 @@
 
 ### 1. Login to get JWT token
 ```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"john@example.com","password":"password123"}'
+curl -X POST http://localhost:3000/api/auth/login -H "Content-Type: application/json" -d '{"email":"john@example.com","password":"password123"}'
 ```
 
 Response:
@@ -59,38 +57,31 @@ curl -X GET http://localhost:3000/api/bookings/event/event-1
 
 ### Get Current User
 ```bash
-curl -X GET http://localhost:3000/api/auth/me \
-  -H "Authorization: Bearer $TOKEN"
+curl -X GET http://localhost:3000/api/auth/me -H "Authorization: Bearer $TOKEN"
 ```
 
 ### Get My Bookings
 ```bash
-curl -X GET http://localhost:3000/api/bookings/my-bookings \
-  -H "Authorization: Bearer $TOKEN"
+curl -X GET http://localhost:3000/api/bookings/my-bookings -H "Authorization: Bearer $TOKEN"
 ```
 
 ### Get My Events (Trainers Only)
 ```bash
 # Login as trainer first
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"sarah@example.com","password":"password123"}'
+curl -X POST http://localhost:3000/api/auth/login -H "Content-Type: application/json" -d '{"email":"sarah@example.com","password":"password123"}'
 
 # Then get events
-curl -X GET http://localhost:3000/api/events/my-events \
-  -H "Authorization: Bearer $TRAINER_TOKEN"
+curl -X GET http://localhost:3000/api/events/my-events -H "Authorization: Bearer $TRAINER_TOKEN"
 ```
 
 ### Get Conversations
 ```bash
-curl -X GET http://localhost:3000/api/messages/conversations \
-  -H "Authorization: Bearer $TOKEN"
+curl -X GET http://localhost:3000/api/messages/conversations -H "Authorization: Bearer $TOKEN"
 ```
 
 ### Get Conversation with Specific User
 ```bash
-curl -X GET http://localhost:3000/api/messages/conversation/trainer-1 \
-  -H "Authorization: Bearer $TOKEN"
+curl -X GET http://localhost:3000/api/messages/conversation/trainer-1 -H "Authorization: Bearer $TOKEN"
 ```
 
 ## POST Examples
@@ -109,40 +100,17 @@ curl -X POST http://localhost:3000/api/auth/register \
 
 ### Create Booking
 ```bash
-curl -X POST http://localhost:3000/api/bookings \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TOKEN" \
-  -d '{
-    "event": "event-2",
-    "notes": "Looking forward to the HIIT session"
-  }'
+curl -X POST http://localhost:3000/api/bookings -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" -d '{"event":"event-2","notes":"Looking forward to the HIIT session"}'
 ```
 
 ### Send Message
 ```bash
-curl -X POST http://localhost:3000/api/messages \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TOKEN" \
-  -d '{
-    "recipient": "trainer-1",
-    "content": "What should I bring to the yoga class?"
-  }'
+curl -X POST http://localhost:3000/api/messages -H "Content-Type: application/json" -H "Authorization: Bearer $TOKEN" -d '{"recipient":"trainer-1","content":"What should I bring to the yoga class?"}'
 ```
 
 ### Create Event (Trainers Only)
 ```bash
-curl -X POST http://localhost:3000/api/events \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TRAINER_TOKEN" \
-  -d '{
-    "title": "Evening Pilates",
-    "description": "Relaxing pilates session",
-    "date": "2024-01-20",
-    "time": "19:00",
-    "duration": 60,
-    "capacity": 12,
-    "price": 30
-  }'
+curl -X POST http://localhost:3000/api/events -H "Content-Type: application/json" -H "Authorization: Bearer $TRAINER_TOKEN" -d '{"title":"Evening Pilates","description":"Relaxing pilates session","date":"2024-01-20","time":"19:00","duration":60,"capacity":12,"price":30}'
 ```
 
 ## Test Data IDs
