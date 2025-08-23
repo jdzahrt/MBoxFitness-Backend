@@ -118,9 +118,9 @@ curl -X POST http://localhost:3000/api/events -H "Content-Type: application/json
 Use these IDs for testing:
 
 - **Users**: `user-1`, `trainer-1`, `trainer-2`
-- **Events**: `event-1`, `event-2`
-- **Bookings**: `booking-1`
-- **Messages**: `message-1`, `message-2`
+- **Events**: `event-1` (Boxing Bootcamp), `event-2` (Fitness Competition), `event-3` (Nutrition Workshop), `event-4` (Team Building), `event-5` (Charity Run), `event-6` (Boxing Seminar)
+- **Bookings**: `booking-1`, `booking-2`
+- **Messages**: `message-1`, `message-2`, `message-3`
 
 ## Expected Responses
 
