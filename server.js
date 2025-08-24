@@ -27,15 +27,15 @@ app.use(express.json());
 // Socket.io for real-time messaging
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
-  
+
   socket.on('join_room', (roomId) => {
     socket.join(roomId);
   });
-  
+
   socket.on('send_message', (data) => {
     socket.to(data.roomId).emit('receive_message', data);
   });
-  
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });
@@ -54,19 +54,6 @@ app.get('/health', (req, res) => {
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development'
   });
-});
-
-// Handle root and favicon requests
-app.get('/', (req, res) => {
-  res.json({ message: 'MBoxFitness API', health: '/health' });
-});
-
-app.get('/favicon.ico', (req, res) => {
-  res.status(204).end();
-});
-
-app.get('/favicon.png', (req, res) => {
-  res.status(204).end();
 });
 
 // Routes
