@@ -9,7 +9,6 @@ Backend service for the MBoxFitness React Native app, providing authentication, 
 - JWT Authentication & Authorization
 - User profiles (users & trainers)
 - Event management & bookings
-- Real-time messaging with Socket.io
 - RESTful API endpoints
 - Health monitoring endpoint
 
@@ -18,7 +17,6 @@ Backend service for the MBoxFitness React Native app, providing authentication, 
 - Node.js & Express
 - AWS DynamoDB (Free Tier)
 - JWT for authentication
-- Socket.io for real-time messaging
 - bcryptjs for password hashing
 - Deployed on Vercel
 
