@@ -41,6 +41,11 @@ io.on('connection', (socket) => {
   });
 });
 
+// Handle common browser requests
+app.get('/', (req, res) => res.status(204).end());
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+app.get('/favicon.png', (req, res) => res.status(204).end());
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({
@@ -49,6 +54,19 @@ app.get('/health', (req, res) => {
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development'
   });
+});
+
+// Handle root and favicon requests
+app.get('/', (req, res) => {
+  res.json({ message: 'MBoxFitness API', health: '/health' });
+});
+
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end();
+});
+
+app.get('/favicon.png', (req, res) => {
+  res.status(204).end();
 });
 
 // Routes

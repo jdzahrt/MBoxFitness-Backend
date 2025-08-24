@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "echo 'Build complete'"
+    "build": "echo 'Build complete'",
+    "postdeploy": "curl -f $VERCEL_URL/health || exit 1"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.0.0",
