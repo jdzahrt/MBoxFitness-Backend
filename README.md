@@ -147,12 +147,6 @@ curl -X GET https://mboxfitness-backend.vercel.app/api/messages/my-messages -H "
 curl -X GET https://mboxfitness-backend.vercel.app/api/messages/unread/count -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
-## Socket.io Events
-
-- `join_room` - Join message room
-- `send_message` - Send real-time message
-- `receive_message` - Receive real-time message
-
 ## Scripts
 
 - `./scripts/setup-local.sh` - Setup local DynamoDB + test data
