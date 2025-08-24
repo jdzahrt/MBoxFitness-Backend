@@ -30,7 +30,7 @@ router.post('/', auth, async (req, res) => {
 router.get('/my-bookings', auth, async (req, res) => {
   try {
     const bookings = await Booking.findByUser(req.user.id);
-    console.log(bookings)
+
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });

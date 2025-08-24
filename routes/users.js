@@ -18,7 +18,6 @@ router.post('/', [
     }
 
     const { name, email, password } = req.body;
-    console.log(name, email, password )
 
     const existingUser = await User.findByEmail(email);
     if (existingUser) {
