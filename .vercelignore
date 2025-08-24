@@ -1,0 +1,7 @@
+node_modules
+.env
+docker
+scripts/setup-local.sh
+scripts/reset-local.sh
+test-api.sh
+docker-compose.yml
