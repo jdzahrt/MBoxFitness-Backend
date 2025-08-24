@@ -9,7 +9,7 @@ const router = express.Router();
 router.post('/', auth, async (req, res) => {
   try {
     const { recipient, content, type, title } = req.body;
-    
+
     const message = await Message.create({
       sender: req.user.id,
       recipient,
@@ -17,7 +17,7 @@ router.post('/', auth, async (req, res) => {
       type: type || 'message',
       title: title || 'New Message'
     });
-    
+
     res.status(201).json(message);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -28,7 +28,7 @@ router.post('/', auth, async (req, res) => {
 router.get('/my-messages', auth, async (req, res) => {
   try {
     const messages = await Message.findByUser(req.user.id);
-    
+
     // Populate sender info
     for (let message of messages) {
       const sender = await User.findById(message.sender);
@@ -37,7 +37,7 @@ router.get('/my-messages', auth, async (req, res) => {
         message.senderInfo = sender;
       }
     }
-    
+
     res.json(messages);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -48,23 +48,23 @@ router.get('/my-messages', auth, async (req, res) => {
 router.get('/:id', auth, async (req, res) => {
   try {
     const message = await Message.findById(req.params.id);
-    
+
     if (!message) {
       return res.status(404).json({ message: 'Message not found' });
     }
-    
+
     // Check if user is recipient
     if (message.recipient !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized' });
     }
-    
+
     // Populate sender info
     const sender = await User.findById(message.sender);
     if (sender) {
       delete sender.password;
       message.senderInfo = sender;
     }
-    
+
     res.json(message);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -75,15 +75,15 @@ router.get('/:id', auth, async (req, res) => {
 router.put('/:id/read', auth, async (req, res) => {
   try {
     const message = await Message.findById(req.params.id);
-    
+
     if (!message) {
       return res.status(404).json({ message: 'Message not found' });
     }
-    
+
     if (message.recipient !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized' });
     }
-    
+
     await Message.markAsRead(req.params.id);
     res.json({ message: 'Message marked as read' });
   } catch (error) {
