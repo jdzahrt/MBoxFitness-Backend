@@ -48,7 +48,7 @@ class User {
   static async update(id, updates) {
     const updateExpression = [];
     const expressionAttributeValues = {};
-    
+
     Object.keys(updates).forEach(key => {
       updateExpression.push(`${key} = :${key}`);
       expressionAttributeValues[`:${key}`] = updates[key];

@@ -6,39 +6,8 @@ const auth = require('../middleware/auth');
 
 const router = express.Router();
 
-// Register
-router.post('/register', [
-  body('email').isEmail(),
-  body('password').isLength({ min: 6 }),
-  body('name').notEmpty()
-], async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { email, password, name, role } = req.body;
-    
-    const existingUser = await User.findByEmail(email);
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
-
-    const user = await User.create({ email, password, name, role });
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    
-    res.status(201).json({
-      token,
-      user: { id: user.id, email: user.email, name: user.name, role: user.role }
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
 // Login
-router.post('/login', [
+router.post('/', [
   body('email').isEmail(),
   body('password').exists()
 ], async (req, res) => {
@@ -49,14 +18,14 @@ router.post('/login', [
     }
 
     const { email, password } = req.body;
-    
+
     const user = await User.findByEmail(email);
     if (!user || !(await User.comparePassword(password, user.password))) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    
+
     res.json({
       token,
       user: { id: user.id, email: user.email, name: user.name, role: user.role }
@@ -79,16 +48,16 @@ router.post('/test-login', async (req, res) => {
 
   try {
     const { userId = 1 } = req.body;
-    
+
     const testUsers = [
       { id: 'test-user-1', email: 'test1@example.com', name: 'Test User 1', role: 'user' },
       { id: 'test-user-2', email: 'test2@example.com', name: 'Test User 2', role: 'trainer' },
       { id: 'test-user-3', email: 'admin@example.com', name: 'Admin User', role: 'admin' }
     ];
-    
+
     const testUser = testUsers[userId - 1] || testUsers[0];
     const token = jwt.sign({ userId: testUser.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    
+
     res.json({
       token,
       user: testUser
