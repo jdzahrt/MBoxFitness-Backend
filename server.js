@@ -9,6 +9,7 @@ const userRoutes = require('./routes/users');
 const eventRoutes = require('./routes/events');
 const bookingRoutes = require('./routes/bookings');
 const messageRoutes = require('./routes/messages');
+const paymentRoutes = require('./routes/payments');
 
 const app = express();
 const server = http.createServer(app);
@@ -46,6 +47,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/payments', paymentRoutes);
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
