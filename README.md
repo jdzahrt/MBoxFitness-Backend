@@ -2,6 +2,8 @@
 
 Backend service for the MBoxFitness React Native app, providing authentication, user management, event booking, and real-time messaging.
 
+🌐 **Live API**: https://mboxfitness-backend.vercel.app
+
 ## Features
 
 - JWT Authentication & Authorization
@@ -9,6 +11,7 @@ Backend service for the MBoxFitness React Native app, providing authentication, 
 - Event management & bookings
 - Real-time messaging with Socket.io
 - RESTful API endpoints
+- Health monitoring endpoint
 
 ## Tech Stack
 
@@ -17,6 +20,7 @@ Backend service for the MBoxFitness React Native app, providing authentication, 
 - JWT for authentication
 - Socket.io for real-time messaging
 - bcryptjs for password hashing
+- Deployed on Vercel
 
 ## Quick Start
 
@@ -56,11 +60,18 @@ NODE_ENV=development
 DYNAMODB_LOCAL=true
 ```
 
-## Local Development
+## Deployment
 
+### Production
+- **API Base URL**: https://mboxfitness-backend.vercel.app
+- **Health Check**: https://mboxfitness-backend.vercel.app/health
+- **Platform**: Vercel (Serverless)
+
+### Local Development
 - **DynamoDB Local**: http://localhost:8000
 - **DynamoDB Admin**: http://localhost:8001
 - **API Server**: http://localhost:3000
+- **Health Check**: http://localhost:3000/health
 
 ### Test Accounts
 - User: `john@example.com` / `password123`
@@ -79,56 +90,61 @@ DYNAMODB_LOCAL=true
 
 ## API Examples
 
+### Health Check
+```bash
+# Production
+curl https://mboxfitness-backend.vercel.app/health
+
+# Local
+curl http://localhost:3000/health
+```
+
 ### Authentication
 ```bash
-# Login
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"john@example.com","password":"password123"}'
+# Login (Production)
+curl -X POST https://mboxfitness-backend.vercel.app/api/auth/login -H "Content-Type: application/json" -d '{"email":"john@example.com","password":"password123"}'
+
+# Login (Local)
+curl -X POST http://localhost:3000/api/auth/login -H "Content-Type: application/json" -d '{"email":"john@example.com","password":"password123"}'
 
 # Get current user (requires token)
-curl -X GET http://localhost:3000/api/auth/me \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+curl -X GET https://mboxfitness-backend.vercel.app/api/auth/me -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Users
 ```bash
 # Get all trainers
-curl -X GET http://localhost:3000/api/users/trainers/list
+curl -X GET https://mboxfitness-backend.vercel.app/api/users/trainers/list
 
 # Get user profile
-curl -X GET http://localhost:3000/api/users/trainer-1
+curl -X GET https://mboxfitness-backend.vercel.app/api/users/trainer-1
 ```
 
 ### Events
 ```bash
 # Get all events
-curl -X GET http://localhost:3000/api/events
+curl -X GET https://mboxfitness-backend.vercel.app/api/events
 
 # Get trainer's events (requires auth)
-curl -X GET http://localhost:3000/api/events/my-events \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+curl -X GET https://mboxfitness-backend.vercel.app/api/events/my-events -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Bookings
 ```bash
 # Get user bookings (requires auth)
-curl -X GET http://localhost:3000/api/bookings/my-bookings \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+curl -X GET https://mboxfitness-backend.vercel.app/api/bookings/my-bookings -H "Authorization: Bearer YOUR_JWT_TOKEN"
 
-# Get event bookings
-curl -X GET http://localhost:3000/api/bookings/event/event-1
+# Get class bookings
+curl -X GET https://mboxfitness-backend.vercel.app/api/bookings/class/1
 ```
 
 ### Messages
 ```bash
-# Get conversations (requires auth)
-curl -X GET http://localhost:3000/api/messages/conversations \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+# Get user messages (requires auth)
+curl -X GET https://mboxfitness-backend.vercel.app/api/messages/my-messages -H "Authorization: Bearer YOUR_JWT_TOKEN"
 
-# Get conversation with user
-curl -X GET http://localhost:3000/api/messages/conversation/trainer-1 \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+# Get unread count
+curl -X GET https://mboxfitness-backend.vercel.app/api/messages/unread/count -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ## Socket.io Events
