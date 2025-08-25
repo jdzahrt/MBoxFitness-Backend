@@ -59,6 +59,17 @@ router.put('/profile', auth, async (req, res) => {
   }
 });
 
+// Update push token
+router.put('/push-token', auth, async (req, res) => {
+  try {
+    const { pushToken } = req.body;
+    const user = await User.update(req.user.id, { pushToken });
+    res.json({ message: 'Push token updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Get trainers
 router.get('/trainers/list', async (req, res) => {
   try {

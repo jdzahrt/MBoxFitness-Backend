@@ -1,7 +1,10 @@
 const express = require('express');
+const { Expo } = require('expo-server-sdk');
 const Message = require('../models/Message');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
+
+const expo = new Expo();
 
 const router = express.Router();
 
@@ -9,6 +12,7 @@ const router = express.Router();
 router.post('/', auth, async (req, res) => {
   try {
     const { recipient, content, type, title } = req.body;
+    console.log('Message request:', { recipient, content, type, title, sender: req.user.id });
 
     const message = await Message.create({
       sender: req.user.id,
@@ -17,10 +21,35 @@ router.post('/', auth, async (req, res) => {
       type: type || 'message',
       title: title || 'New Message'
     });
+    console.log('Message created:', message);
+
+    // Send push notification to recipient
+    const recipientUser = await User.findById(recipient);
+    if (recipientUser && recipientUser.pushToken) {
+      const pushToken = recipientUser.pushToken;
+      
+      if (Expo.isExpoPushToken(pushToken)) {
+        const pushMessage = {
+          to: pushToken,
+          sound: 'default',
+          title: title || 'New Training Inquiry',
+          body: content,
+          data: { messageId: message.id, senderId: req.user.id }
+        };
+        
+        try {
+          await expo.sendPushNotificationsAsync([pushMessage]);
+          console.log('Push notification sent successfully');
+        } catch (pushError) {
+          console.error('Push notification error:', pushError);
+        }
+      }
+    }
 
     res.status(201).json(message);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Message creation error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 

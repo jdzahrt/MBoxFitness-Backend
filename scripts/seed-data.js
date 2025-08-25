@@ -34,6 +34,15 @@ const seedData = async () => {
   
   const users = [
     {
+      id: 'admin-1',
+      email: 'admin@example.com',
+      password: hashedPassword,
+      name: 'Admin User',
+      role: 'admin',
+      profile: { permissions: ['manage_users', 'manage_events', 'manage_bookings'] },
+      createdAt: new Date().toISOString()
+    },
+    {
       id: 'user-1',
       email: 'john@example.com',
       password: hashedPassword,
@@ -222,12 +231,49 @@ const seedData = async () => {
     }
   ];
 
+  // Create test hikes
+  const hikes = [
+    {
+      id: 'hike-1',
+      name: 'Mountain Trail Adventure',
+      description: 'Scenic mountain trail with moderate difficulty',
+      location: 'Blue Ridge Mountains',
+      difficulty: 'moderate',
+      distance: 5.2,
+      duration: 180,
+      date: '2024-01-28',
+      time: '08:00',
+      guide: 'trainer-1',
+      capacity: 12,
+      price: 35,
+      status: 'active',
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 'hike-2',
+      name: 'Sunrise Peak Hike',
+      description: 'Early morning hike to catch the sunrise',
+      location: 'Eagle Peak Trail',
+      difficulty: 'challenging',
+      distance: 8.1,
+      duration: 240,
+      date: '2024-02-05',
+      time: '05:30',
+      guide: 'trainer-2',
+      capacity: 8,
+      price: 50,
+      status: 'active',
+      createdAt: new Date().toISOString()
+    }
+  ];
+
   // Insert data
   const tables = [
     { data: users, tableName: 'MBoxFitness-Users', name: 'Users' },
     { data: events, tableName: 'MBoxFitness-Events', name: 'Events' },
     { data: bookings, tableName: 'MBoxFitness-Bookings', name: 'Bookings' },
-    { data: messages, tableName: 'MBoxFitness-Messages', name: 'Messages' }
+    { data: messages, tableName: 'MBoxFitness-Messages', name: 'Messages' },
+    { data: hikes, tableName: 'MBoxFitness-Hikes', name: 'Hikes' }
   ];
 
   for (const { data, tableName, name } of tables) {

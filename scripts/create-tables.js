@@ -52,11 +52,19 @@ const createTables = async () => {
     BillingMode: 'PAY_PER_REQUEST'
   };
 
+  const hikesTable = {
+    TableName: 'MBoxFitness-Hikes',
+    KeySchema: [{ AttributeName: 'id', KeyType: 'HASH' }],
+    AttributeDefinitions: [{ AttributeName: 'id', AttributeType: 'S' }],
+    BillingMode: 'PAY_PER_REQUEST'
+  };
+
   const tables = [
     { table: usersTable, name: 'Users' },
     { table: eventsTable, name: 'Events' },
     { table: bookingsTable, name: 'Bookings' },
-    { table: messagesTable, name: 'Messages' }
+    { table: messagesTable, name: 'Messages' },
+    { table: hikesTable, name: 'Hikes' }
   ];
 
   for (const { table, name } of tables) {
