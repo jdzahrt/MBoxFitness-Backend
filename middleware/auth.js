@@ -27,6 +27,7 @@ const auth = async (req, res, next) => {
     }
 
     delete user.password;
+    console.log('userrrrrr', user)
     req.user = user;
     next();
   } catch (error) {

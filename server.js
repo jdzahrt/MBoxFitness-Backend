@@ -33,6 +33,47 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Password reset redirect endpoint
+app.get('/reset-password', (req, res) => {
+  const { token } = req.query;
+  
+  if (!token) {
+    return res.status(400).send(`
+      <html>
+        <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+          <h2>Invalid Reset Link</h2>
+          <p>This password reset link is invalid or missing a token.</p>
+        </body>
+      </html>
+    `);
+  }
+  
+  // Try to open the app first, then show fallback
+  const deepLink = `mboxfitness://reset-password?token=${token}`;
+  
+  res.send(`
+    <html>
+      <head>
+        <title>MBoxFitness - Reset Password</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+      </head>
+      <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+        <h2>MBoxFitness Password Reset</h2>
+        <p>Click the button below to open the MBoxFitness app and reset your password:</p>
+        <a href="${deepLink}" style="background-color: #007bff; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 20px;">Open MBoxFitness App</a>
+        <p style="margin-top: 30px; color: #666;">If the app doesn't open automatically, please copy this token and use it in the app:</p>
+        <code style="background-color: #f5f5f5; padding: 10px; border-radius: 3px; display: inline-block;">${token}</code>
+        <script>
+          // Attempt to open the app automatically
+          setTimeout(() => {
+            window.location.href = '${deepLink}';
+          }, 1000);
+        </script>
+      </body>
+    </html>
+  `);
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
